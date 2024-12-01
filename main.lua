@@ -57,6 +57,10 @@ local function createLoadingScreen()
 	background.Size = UDim2.new(1, 0, 1, 0)
 	background.Parent = loadingScreen
 
+	local blurEffect = Instance.new("BlurEffect")
+	blurEffect.Size = 0
+	blurEffect.Parent = game:GetService("Lighting")
+
 	local loadingText = Instance.new("TextLabel")
 	loadingText.Name = "LoadingText"
 	loadingText.Font = Enum.Font.GothamBold
@@ -64,7 +68,7 @@ local function createLoadingScreen()
 	loadingText.TextColor3 = Color3.fromRGB(255, 255, 255)
 	loadingText.TextSize = 32
 	loadingText.AnchorPoint = Vector2.new(0.5, 0.5)
-	loadingText.Position = UDim2.new(0.5, 0, 0.5, 0)
+	loadingText.Position = UDim2.new(0.5, 0, 0.5, -50)
 	loadingText.BackgroundTransparency = 1
 	loadingText.Parent = background
 
@@ -82,7 +86,14 @@ local function createLoadingScreen()
 		tween:Play()
 	end
 
+	local function animateBlurEffect()
+		local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, -1, true)
+		local tween = TweenService:Create(blurEffect, tweenInfo, {Size = 24})
+		tween:Play()
+	end
+
 	animateLoadingBar()
+	animateBlurEffect()
 
 	return loadingScreen
 end
@@ -1930,7 +1941,7 @@ function MacLib:Window(Settings)
 					sliderValueUIStroke.Parent = sliderValue
 
 					local sliderValueUIPadding = Instance.new("UIPadding")
-					sliderValueUIPadding.Name = "SliderValueUIPadding"
+					sliderValueUIPadding.Name = "UIPadding"
 					sliderValueUIPadding.PaddingLeft = UDim.new(0, 2)
 					sliderValueUIPadding.PaddingRight = UDim.new(0, 2)
 					sliderValueUIPadding.Parent = sliderValue
@@ -2177,11 +2188,15 @@ function MacLib:Window(Settings)
 					inputBoxUICorner.Parent = inputBox
 
 					local inputBoxUIStroke = Instance.new("UIStroke")
-					inputBoxUIStroke.Name = "InputBoxUIStroke"
+					inputBoxUIStroke.Name = "UIStroke"
 					inputBoxUIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 					inputBoxUIStroke.Color = Color3.fromRGB(255, 255, 255)
-					inputBoxUIStroke.Transparency = 0.9
+					inputBoxUIStroke.Transparency = 0.5
 					inputBoxUIStroke.Parent = inputBox
+
+					local inputBoxUISizeConstraint = Instance.new("UISizeConstraint")
+					inputBoxUISizeConstraint.Name = "InputBoxUISizeConstraint"
+					inputBoxUISizeConstraint.Parent = inputBox
 
 					local inputBoxUIPadding = Instance.new("UIPadding")
 					inputBoxUIPadding.Name = "UIPadding"
@@ -2354,7 +2369,7 @@ function MacLib:Window(Settings)
 					binderBoxUICorner.Parent = binderBox
 
 					local binderBoxUIStroke = Instance.new("UIStroke")
-					binderBoxUIStroke.Name = "BinderBoxUIStroke"
+					binderBoxUIStroke.Name = "UIStroke"
 					binderBoxUIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 					binderBoxUIStroke.Color = Color3.fromRGB(255, 255, 255)
 					binderBoxUIStroke.Transparency = 0.9
@@ -4189,8 +4204,7 @@ function MacLib:Window(Settings)
 					modifierInputs.Hex.FocusLost:Connect(updateFromHex)
 					modifierInputs.Red.FocusLost:Connect(updateFromRGB)
 					modifierInputs.Green.FocusLost:Connect(updateFromRGB)
-					modifierInputs.Blue.FocusLost:Connect(updateFromRGB)
-					modifierInputs.Alpha.FocusLost:Connect(update)
+					modifierInputs.Blue.FocusLost:Connect(update)
 
 					modifierInputs.Hex.Focused:Connect(function()
 						onFocusEnter(modifierInputs.Hex)
@@ -4599,6 +4613,7 @@ function MacLib:Window(Settings)
 					spacer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 					spacer.BackgroundTransparency = 1
 					spacer.BorderColor3 = Color3.fromRGB(0, 0, 0)
+					spacer.BorderSizePixel = 0
 					spacer.BorderSizePixel = 0
 					spacer.Position = UDim2.fromScale(0, 1)
 					spacer.Parent = section
@@ -5629,6 +5644,7 @@ function MacLib:Window(Settings)
 
 	-- Hide loading screen after everything is loaded
 	loadingScreen:Destroy()
+	game:GetService("Lighting").BlurEffect:Destroy()
 
 	return WindowFunctions
 end
